@@ -1,0 +1,21 @@
+# ── 凭据：绝不入库 ──────────────────────────────────────────────
+env.txt
+*.key
+.env
+
+# ── benchmark 产物（可由 build_case.py / run_bench.py 重建）─────
+benchmark/.work/
+.work/
+
+# ── Python 缓存 ────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# ── 操作系统 / 编辑器杂物 ──────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

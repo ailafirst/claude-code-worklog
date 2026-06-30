@@ -1,0 +1,32 @@
+{
+  "title": "重构到一半（仅 uncommitted）",
+  "tests": "本次 session 一个 commit 都没有，全是未提交的半成品。模型要从 uncommitted 字段认出'有进行中的工作'并记下停下的原因与下一步。",
+  "trap": "看到 commits:[] 就判'今天没产出，没什么可记'。",
+  "difficulty": "core",
+  "project": "billing-svc",
+  "branch": "refactor/extract-charges",
+  "git": "repo",
+  "expected_threads": ["module-extract"],
+  "init": {
+    "message": "initial: monolithic billing",
+    "day": -1, "time": "18:00",
+    "files": {
+      "src/billing.py": "def charge(o): return _apply(o)\ndef refund(o): return _apply(o, neg=True)\ndef _apply(o, neg=False): ...\n"
+    }
+  },
+  "commits": [],
+  "uncommitted": {
+    "files": {
+      "src/billing/__init__.py": "\n",
+      "src/billing/charges.py": "from .billing import _apply   # FIXME: refund 也要用 _apply，边界不对\n\ndef charge(o): return _apply(o)\n",
+      "src/billing.py": "def refund(o): return _apply(o, neg=True)\n# charge 已移走，_apply 还卡在这里没法干净拆分\ndef _apply(o, neg=False): ...\n"
+    }
+  },
+  "expect": {
+    "commit_count": 0,
+    "branch": "refactor/extract-charges",
+    "uncommitted_min": 2,
+    "since_used": false,
+    "has_session_notes": false
+  }
+}

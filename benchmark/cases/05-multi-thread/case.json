@@ -1,0 +1,56 @@
+{
+  "title": "串台的一天（多 thread 分离）",
+  "tests": "一天里碰了三件不相干的事。模型要把它们识别成三个独立 thread 并分别记，而不是揉成一坨。",
+  "trap": "把四个 commit 混成一个'做成了什么'清单，thread 只写一个或漏写。",
+  "difficulty": "core",
+  "project": "web-app",
+  "branch": "main",
+  "git": "repo",
+  "expected_threads": ["search-bug", "deps-upgrade", "onboarding-docs"],
+  "init": {
+    "message": "initial",
+    "day": -1, "time": "17:00",
+    "files": {
+      "src/search/index.ts": "export function search(q, filter){ return memo(q, run(q, filter)); }\n",
+      "package.json": "{ \"dependencies\": { \"lodash\": \"4.17.20\" } }\n"
+    }
+  },
+  "commits": [
+    {
+      "message": "fix search returning stale results after filter change",
+      "day": 0, "time": "10:00",
+      "files": {
+        "src/search/index.ts": "export function search(q, filter){ return memo([q, filter], run(q, filter)); }\n"
+      }
+    },
+    {
+      "message": "bump lodash 4.17.20 -> 4.17.21 (CVE-2021-23337)",
+      "day": 0, "time": "11:15",
+      "files": {
+        "package.json": "{ \"dependencies\": { \"lodash\": \"4.17.21\" } }\n",
+        "package-lock.json": "{ \"lodash\": { \"version\": \"4.17.21\" } }\n"
+      }
+    },
+    {
+      "message": "add onboarding doc for new contributors",
+      "day": 0, "time": "14:30",
+      "files": {
+        "docs/onboarding.md": "# 新人上手\n\n1. 装依赖\n2. 跑测试\n"
+      }
+    },
+    {
+      "message": "update search test snapshot for new memo key",
+      "day": 0, "time": "15:00",
+      "files": {
+        "src/search/__tests__/index.test.ts": "test('memo key includes filter', () => {});\n"
+      }
+    }
+  ],
+  "expect": {
+    "commit_count": 4,
+    "branch": "main",
+    "files_changed_min": 4,
+    "since_used": false,
+    "has_session_notes": false
+  }
+}

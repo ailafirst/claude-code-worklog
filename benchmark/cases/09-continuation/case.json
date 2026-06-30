@@ -1,0 +1,43 @@
+{
+  "title": "接上次的线（--since 续接 + 复用 thread）",
+  "tests": "今天的日文件已有一个早先的 session 块（head 落在某提交）。collect 的 --since 回退应只输出'自那个 head 以来'的提交，模型应延续同一 thread、承接上次未决问题，而非从零重述。",
+  "trap": "无视 collect.since 给出的精确增量，把 module-extract 当全新任务从头讲；或换了个 thread 名导致聚合断线。",
+  "difficulty": "core",
+  "project": "billing-svc",
+  "branch": "main",
+  "git": "repo",
+  "expected_threads": ["module-extract"],
+  "prior_head_from": "init",
+  "init": {
+    "message": "wip: start charges module extraction (上次 session 的收尾 head)",
+    "day": 0, "time": "09:30",
+    "files": {
+      "src/billing.py": "def charge(o): return _apply(o)\ndef refund(o): return _apply(o, neg=True)\ndef _apply(o, neg=False): ...\n"
+    }
+  },
+  "commits": [
+    {
+      "message": "extract charges module; move shared _apply to billing.core",
+      "day": 0, "time": "14:00",
+      "files": {
+        "src/billing/core.py": "def apply(o, neg=False): ...   # 原 _apply，共享结算原语\n",
+        "src/billing/charges.py": "from .core import apply\ndef charge(o): return apply(o)\n",
+        "src/billing.py": "# charge/refund 已迁出，本文件保留为兼容 shim\nfrom .billing.charges import charge\n"
+      }
+    },
+    {
+      "message": "move refunds onto billing.core too",
+      "day": 0, "time": "15:10",
+      "files": {
+        "src/billing/refunds.py": "from .core import apply\ndef refund(o): return apply(o, neg=True)\n"
+      }
+    }
+  ],
+  "expect": {
+    "commit_count": 2,
+    "branch": "main",
+    "files_changed_min": 3,
+    "since_used": true,
+    "has_session_notes": false
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "title": "加分页（基线）",
+  "tests": "最朴素的正向场景：git 记录清楚，模型应只补 git 拿不到的增量信息（为什么选 cursor、tie-break 细节），而非复述 commit 标题。",
+  "trap": "把三条 commit 标题换行抄进正文，零增量信息。",
+  "difficulty": "baseline",
+  "project": "shopcart-api",
+  "branch": "main",
+  "git": "repo",
+  "expected_threads": ["api-pagination"],
+  "init": {
+    "message": "initial: orders endpoint",
+    "day": -2, "time": "09:00",
+    "files": {
+      "README.md": "# shopcart-api\n",
+      "src/api/orders.py": "def list_orders(limit=20):\n    return db.query('select * from orders order by created_at desc limit ?', limit)\n"
+    }
+  },
+  "commits": [
+    {
+      "message": "add cursor pagination to orders endpoint",
+      "day": 0, "time": "10:10",
+      "files": {
+        "src/api/orders.py": "from .pagination import decode_cursor, encode_cursor\n\ndef list_orders(limit=20, cursor=None):\n    after = decode_cursor(cursor) if cursor else None\n    rows = db.query_orders(after=after, limit=limit + 1)\n    nxt = encode_cursor(rows[limit]) if len(rows) > limit else None\n    return {'items': rows[:limit], 'next_cursor': nxt}\n",
+        "src/api/pagination.py": "import base64, json\n\ndef encode_cursor(row):\n    return base64.urlsafe_b64encode(json.dumps([row['created_at'], row['id']]).encode()).decode()\n\ndef decode_cursor(c):\n    return json.loads(base64.urlsafe_b64decode(c))\n"
+      }
+    },
+    {
+      "message": "add pagination tests",
+      "day": 0, "time": "11:30",
+      "files": {
+        "tests/test_pagination.py": "def test_cursor_stable_under_insert():\n    assert True  # 验证翻页中插入新单不会错漏\n"
+      }
+    },
+    {
+      "message": "document pagination params in openapi",
+      "day": 0, "time": "14:05",
+      "files": {
+        "docs/openapi.yaml": "paths:\n  /orders:\n    get:\n      parameters:\n        - {name: cursor, in: query}\n        - {name: limit, in: query}\n"
+      }
+    }
+  ],
+  "expect": {
+    "commit_count": 3,
+    "branch": "main",
+    "files_changed_min": 4,
+    "since_used": false,
+    "has_session_notes": false
+  }
+}

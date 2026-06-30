@@ -1,0 +1,30 @@
+{
+  "title": "线上排障（0 提交的纯调查）",
+  "tests": "整场 session 没有 commit、只有一行未提交的临时日志，但调查结论极有价值。模型要把'排除了什么、相关性、假设、验证计划'记成日记。",
+  "trap": "git 几乎是空的 → 写出空洞或极短的条目。",
+  "difficulty": "core",
+  "project": "payments",
+  "branch": "main",
+  "git": "repo",
+  "expected_threads": ["prod-incident-0630", "conn-pool"],
+  "init": {
+    "message": "initial: webhook handler",
+    "day": -1, "time": "20:00",
+    "files": {
+      "src/webhooks.py": "def handle(req):\n    return process(req)\n"
+    }
+  },
+  "commits": [],
+  "uncommitted": {
+    "files": {
+      "src/webhooks.py": "import time\ndef handle(req):\n    t0 = time.time()\n    r = process(req)\n    log.info('webhook took %sms', (time.time()-t0)*1000)   # 临时计时，排查用\n    return r\n"
+    }
+  },
+  "expect": {
+    "commit_count": 0,
+    "branch": "main",
+    "uncommitted_min": 1,
+    "since_used": false,
+    "has_session_notes": false
+  }
+}

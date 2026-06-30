@@ -1,0 +1,45 @@
+{
+  "title": "中途随手记（合并 session_notes 进 next/open-thread）",
+  "tests": "session 中途用 note 记了两条稍纵即逝的想法（collect 会带出 session_notes）。模型要把这两条吸收进 next/open-thread，而不仅仅记两个 commit。",
+  "trap": "无视 session_notes 字段，只记 cache 层那两个 commit。",
+  "difficulty": "core",
+  "project": "api-gateway",
+  "branch": "main",
+  "git": "repo",
+  "expected_threads": ["cache-layer"],
+  "session_notes": [
+    "缓存命中率只有 ~40%，怀疑 cache key 里带了 query 参数顺序，明天验证",
+    "顺手发现 /health 探活也被缓存了，应该 bypass"
+  ],
+  "init": {
+    "message": "initial: gateway",
+    "day": -1, "time": "17:00",
+    "files": {
+      "src/gateway.ts": "export function route(req){ return forward(req); }\n"
+    }
+  },
+  "commits": [
+    {
+      "message": "add response cache layer for GET endpoints",
+      "day": 0, "time": "11:00",
+      "files": {
+        "src/cache.ts": "export function cacheKey(req){ return req.path + '?' + req.query; }\nexport const cache = new Map();\n",
+        "src/gateway.ts": "import { cache, cacheKey } from './cache';\nexport function route(req){\n  const k = cacheKey(req);\n  if (cache.has(k)) return cache.get(k);\n  const r = forward(req); cache.set(k, r); return r;\n}\n"
+      }
+    },
+    {
+      "message": "add cache unit tests",
+      "day": 0, "time": "14:00",
+      "files": {
+        "tests/cache.test.ts": "test('caches GET', () => {});\n"
+      }
+    }
+  ],
+  "expect": {
+    "commit_count": 2,
+    "branch": "main",
+    "files_changed_min": 2,
+    "since_used": false,
+    "has_session_notes": true
+  }
+}

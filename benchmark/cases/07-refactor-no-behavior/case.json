@@ -1,0 +1,39 @@
+{
+  "title": "大改名（抓战略 why，不抄 diff）",
+  "tests": "一个无行为变化的大 diff。模型必须抓住'为什么改'（为插件架构铺路），而不是把改名的文件逐个列出。",
+  "trap": "正文变成所有被改名/移动文件的清单，加一句'重构'。",
+  "difficulty": "core",
+  "project": "render-engine",
+  "branch": "main",
+  "git": "repo",
+  "expected_threads": ["plugin-arch"],
+  "init": {
+    "message": "initial: monolithic Renderer",
+    "day": -1, "time": "17:00",
+    "files": {
+      "src/render/renderer.py": "class Renderer:\n    def run(self, scene):\n        self._raster(scene); self._shade(scene)\n",
+      "src/render/__init__.py": "from .renderer import Renderer\n"
+    }
+  },
+  "commits": [
+    {
+      "message": "rename Renderer->RenderPipeline, split monolith into discrete stages",
+      "day": 0, "time": "13:00",
+      "delete": ["src/render/renderer.py"],
+      "files": {
+        "src/render/pipeline.py": "from .stages.raster import RasterStage\nfrom .stages.shade import ShadeStage\n\nclass RenderPipeline:\n    def __init__(self, stages=None):\n        self.stages = stages or [RasterStage(), ShadeStage()]\n    def run(self, scene):\n        for s in self.stages: s.apply(scene)\n",
+        "src/render/stages/__init__.py": "\n",
+        "src/render/stages/raster.py": "class RasterStage:\n    def apply(self, scene): ...\n",
+        "src/render/stages/shade.py": "class ShadeStage:\n    def apply(self, scene): ...\n",
+        "src/render/__init__.py": "from .pipeline import RenderPipeline\n"
+      }
+    }
+  ],
+  "expect": {
+    "commit_count": 1,
+    "branch": "main",
+    "files_changed_min": 4,
+    "since_used": false,
+    "has_session_notes": false
+  }
+}

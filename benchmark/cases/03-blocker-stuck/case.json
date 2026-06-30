@@ -1,0 +1,48 @@
+{
+  "title": "flaky CI（卡点 + 下一步写具体）",
+  "tests": "session 没收尾，停在一个具体的竞态假设上。模型要把 blocker 与 next 写到可执行的颗粒度，而非'有个 bug'。",
+  "trap": "blocker 写成'测试偶尔挂'，next 留空或写'继续查'。",
+  "difficulty": "core",
+  "project": "orders-api",
+  "branch": "fix/flaky-checkout",
+  "git": "repo",
+  "expected_threads": ["flaky-ci", "db-migrations"],
+  "init": {
+    "message": "initial: checkout test + CI + migration",
+    "day": -1, "time": "18:00",
+    "files": {
+      "tests/test_checkout.py": "def test_checkout_idempotency():\n    seed_orders()\n    assert checkout('order-1') == checkout('order-1')\n",
+      "ci/integration.yml": "steps:\n  - run: apply_migrations\n  - run: pytest tests/\n",
+      "db/migrations/0007_add_index.sql": "create index concurrently idx_orders_key on orders(idem_key);\n"
+    }
+  },
+  "commits": [
+    {
+      "message": "retry flaky checkout test up to 3x",
+      "day": 0, "time": "11:00",
+      "files": {
+        "tests/test_checkout.py": "import flaky\n\n@flaky.retry(3)\ndef test_checkout_idempotency():\n    seed_orders()\n    assert checkout('order-1') == checkout('order-1')\n"
+      }
+    },
+    {
+      "message": "add wait-for-db step before tests in CI",
+      "day": 0, "time": "15:20",
+      "files": {
+        "ci/integration.yml": "steps:\n  - run: apply_migrations\n  - run: wait_for_db_ready\n  - run: pytest tests/\n"
+      }
+    }
+  ],
+  "uncommitted": {
+    "files": {
+      "tests/test_checkout.py": "import flaky\n\n@flaky.retry(3)\ndef test_checkout_idempotency():\n    seed_orders()\n    print('DEBUG idx state', explain_query('checkout'))   # 临时排查日志\n    assert checkout('order-1') == checkout('order-1')\n"
+    }
+  },
+  "expect": {
+    "commit_count": 2,
+    "branch": "fix/flaky-checkout",
+    "files_changed_min": 2,
+    "uncommitted_min": 1,
+    "since_used": false,
+    "has_session_notes": false
+  }
+}

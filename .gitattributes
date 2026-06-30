@@ -1,0 +1,2 @@
+# 仓库内统一用 LF，避免 Windows/Unix 行尾在 diff 里来回翻
+* text=auto eol=lf

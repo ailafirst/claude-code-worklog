@@ -1,0 +1,47 @@
+{
+  "title": "选状态管理（决策 + 被否的备选及理由）",
+  "tests": "git 里有 spike+revert 的痕迹（试过 Redux 又撤了）。模型要记下最终选择、以及被否的两个备选各自的理由——尤其是 git 看不出的'为什么否'。",
+  "trap": "只记'选了 Zustand'，丢掉 context、Redux 为什么被否、以及那个量化的 re-render 理由。",
+  "difficulty": "core",
+  "project": "dashboard-ui",
+  "branch": "main",
+  "git": "repo",
+  "expected_threads": ["state-mgmt"],
+  "init": {
+    "message": "initial: dashboard filters",
+    "day": -1, "time": "17:00",
+    "files": {
+      "src/Filters.tsx": "export function Filters(){ return null; }\n",
+      "package.json": "{ \"dependencies\": {} }\n"
+    }
+  },
+  "commits": [
+    {
+      "message": "spike: redux store prototype for cross-component filter state",
+      "day": 0, "time": "10:30",
+      "files": {
+        "src/store/redux-spike.ts": "import { createStore } from 'redux';\nexport const store = createStore(()=>({}));   // 试水\n"
+      }
+    },
+    {
+      "message": "revert redux spike (boilerplate disproportionate for 3-person team)",
+      "day": 0, "time": "13:00",
+      "delete": ["src/store/redux-spike.ts"]
+    },
+    {
+      "message": "add zustand filter store with selective subscriptions",
+      "day": 0, "time": "15:00",
+      "files": {
+        "src/store/filters.ts": "import { create } from 'zustand';\nexport const useFilters = create((set)=>({ q:'', setQ:(q)=>set({q}) }));\n",
+        "package.json": "{ \"dependencies\": { \"zustand\": \"4.5.0\" } }\n"
+      }
+    }
+  ],
+  "expect": {
+    "commit_count": 3,
+    "branch": "main",
+    "files_changed_min": 2,
+    "since_used": false,
+    "has_session_notes": false
+  }
+}

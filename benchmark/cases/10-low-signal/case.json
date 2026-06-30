@@ -1,0 +1,41 @@
+{
+  "title": "改版本号 / 错别字（克制，空槽写'无'）",
+  "tests": "今天真的没发生有信号的事。模型应产出一条很短、多数槽位写'无'、threads 为空的条目，抵住把琐事吹成洞见的诱惑。",
+  "trap": "把版本号 bump 和改错别字硬编成'决策/权衡/洞见'，把条目撑长。",
+  "difficulty": "restraint",
+  "project": "docs-site",
+  "branch": "main",
+  "git": "repo",
+  "expected_threads": [],
+  "init": {
+    "message": "initial",
+    "day": -1, "time": "17:00",
+    "files": {
+      "package.json": "{ \"version\": \"1.4.2\" }\n",
+      "CONTRIBUTING.md": "# 贡献指南\n\n请先运行测试套件（test suit）。\n"
+    }
+  },
+  "commits": [
+    {
+      "message": "chore: bump version 1.4.2 -> 1.4.3",
+      "day": 0, "time": "10:00",
+      "files": {
+        "package.json": "{ \"version\": \"1.4.3\" }\n"
+      }
+    },
+    {
+      "message": "docs: fix typo in CONTRIBUTING (suit -> suite)",
+      "day": 0, "time": "10:05",
+      "files": {
+        "CONTRIBUTING.md": "# 贡献指南\n\n请先运行测试套件（test suite）。\n"
+      }
+    }
+  ],
+  "expect": {
+    "commit_count": 2,
+    "branch": "main",
+    "files_changed_min": 2,
+    "since_used": false,
+    "has_session_notes": false
+  }
+}

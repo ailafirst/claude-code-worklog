@@ -1,0 +1,34 @@
+{
+  "title": "修内存泄漏（死路是一等公民）",
+  "tests": "git 只剩最终那 1 个修复提交，但真正值钱的是被它吞掉的 3 条死路。模型必须从 context 把死路写进日记。",
+  "trap": "看到只有 1 个 commit，就只复述这个 commit，丢掉全部排查过程。",
+  "difficulty": "core",
+  "project": "telemetry-svc",
+  "branch": "main",
+  "git": "repo",
+  "expected_threads": ["mem-leak"],
+  "init": {
+    "message": "initial: event consumer",
+    "day": -1, "time": "17:00",
+    "files": {
+      "src/consumer.py": "def consume(record):\n    log_event(record)\n    cache[record['id']] = record\n",
+      "src/stream.py": "def stream(): ...\n"
+    }
+  },
+  "commits": [
+    {
+      "message": "fix memory growth in event consumer: don't capture full payload in log lambda",
+      "day": 0, "time": "16:40",
+      "files": {
+        "src/consumer.py": "def consume(record):\n    rid = record['id']\n    log_event(lambda: rid)   # 只闭包捕获 id，不再拖住整个 payload\n    cache[rid] = summarize(record)\n"
+      }
+    }
+  ],
+  "expect": {
+    "commit_count": 1,
+    "branch": "main",
+    "files_changed_min": 1,
+    "since_used": false,
+    "has_session_notes": false
+  }
+}

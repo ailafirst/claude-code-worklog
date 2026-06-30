@@ -1,0 +1,23 @@
+{
+  "title": "写设计稿（非 git 目录）",
+  "tests": "collect 在非 git 目录返回空结构、退出码 0。模型应照常把设计推理写成日记，而不是因为 git 空就罢工。",
+  "trap": "看到 commits:[] / branch:null 就说'这里没有 git，没什么可记的'。",
+  "difficulty": "edge",
+  "project": "auth-redesign",
+  "branch": null,
+  "git": "none",
+  "expected_threads": ["auth-redesign"],
+  "init": {
+    "files": {
+      "design/auth-v2.md": "# Auth v2 设计草稿\n\n会话方案待定：cookie session vs JWT。\n",
+      "notes.md": "- 管理后台需要即时吊销被盗 token\n- 移动端有离线窗口，待解决\n"
+    }
+  },
+  "commits": [],
+  "expect": {
+    "commit_count": 0,
+    "branch": null,
+    "since_used": false,
+    "has_session_notes": false
+  }
+}
