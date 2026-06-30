@@ -164,6 +164,10 @@ def materialize(case):
 def run_collect(repo, jroot, fresh=False):
     env = dict(os.environ)
     env["JOURNAL_ROOT"] = str(jroot)
+    # 隔离：禁止 git 越过夹具目录向上发现外层仓库。本项目自身就是 git 仓，
+    # 不挡的话 04-non-git 会误查到父仓库的 commit/branch。真 git 夹具的 .git
+    # 就在 repo 目录内，cwd 处即命中，ceiling 不影响它们。
+    env["GIT_CEILING_DIRECTORIES"] = str(Path(repo).resolve().parent)
     args = [sys.executable, str(JOURNAL_PY), "collect"]
     if fresh:
         args.append("--fresh")

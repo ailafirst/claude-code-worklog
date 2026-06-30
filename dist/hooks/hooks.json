@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"${CLAUDE_PLUGIN_ROOT}/skills/journal/journal.py\" snapshot || python3 \"${CLAUDE_PLUGIN_ROOT}/skills/journal/journal.py\" snapshot"
+          }
+        ]
+      }
+    ]
+  }
+}

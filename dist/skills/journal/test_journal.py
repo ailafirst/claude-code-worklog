@@ -563,14 +563,36 @@ if not _filter or run_active():
         check("2026" in out and "06" in out, "path 输出含年/月目录")
 
 
-# ── §10.extra: rollup v2 stub──────────────────────────────────────────────
+# ── §10.extra: rollup（本周素材收集 + --save 落盘）──────────────────────────
 if not _filter or run_active():
-    group("I9 rollup-stub")
+    group("I9 rollup")
     print(f"\n[{_group}]")
 
-    rc, _, err = cli("rollup")
-    check(rc == 2, "rollup stub 退出码 2（表示未实现，非错误）", f"rc={rc}")
-    check("v2" in err.lower() or "未实现" in err, "rollup stderr 提示 v2/未实现")
+    with tempfile.TemporaryDirectory() as tmp:
+        ENV = {"JOURNAL_ROOT": tmp}
+        today_str = date.today().strftime("%Y-%m-%d")
+
+        # 本周一个日条目
+        b = sample_block(today_str, "proj", ["rollup-thread"], "09:00",
+                         "rollup-thread: 本周推进了 X")
+        cli("append", stdin_text=b, env_extra=ENV)
+
+        # rollup（无 --save）→ 输出本周素材供模型蒸馏
+        rc, out, err = cli("rollup", env_extra=ENV)
+        check(rc == 0, "rollup 退出码 0", f"rc={rc}, err={err.strip()}")
+        check("周日记原文" in out, "rollup 输出本周素材标题", f"stdout:\n{out[:200]}")
+        check("rollup-thread" in out, "rollup 素材含本周日条目内容")
+
+        # rollup --save → 从 stdin 落盘到 week-NN.md
+        rollup_md = "# Week · 测试\n\n## 本周推进了什么\n- rollup-thread\n"
+        rc2, _, err2 = cli("rollup", "--save", stdin_text=rollup_md, env_extra=ENV)
+        check(rc2 == 0, "rollup --save 退出码 0", f"rc={rc2}, err={err2.strip()}")
+        week_files = list(Path(tmp).rglob("week-*.md"))
+        check(len(week_files) == 1, "rollup --save 写出 week-NN.md",
+              f"found: {week_files}")
+        if week_files:
+            saved = week_files[0].read_text(encoding="utf-8")
+            check("本周推进了什么" in saved, "week 文件内容为模型生成的 rollup")
 
 
 # ════════════════════════════════════════════════════════════════════════════

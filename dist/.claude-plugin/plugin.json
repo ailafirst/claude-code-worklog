@@ -1,0 +1,10 @@
+{
+  "name": "worklog",
+  "description": "跨 session 工作日记：记 git 留不住、session 结束就蒸发的推理——为什么这么改、试过哪条死路、卡在哪、下次第一步、还有哪些 open thread。",
+  "version": "0.1.0",
+  "author": { "name": "ailafirst", "email": "1787424526@qq.com" },
+  "homepage": "https://github.com/ailafirst/claude-code-worklog",
+  "repository": "https://github.com/ailafirst/claude-code-worklog",
+  "license": "MIT",
+  "keywords": ["journal", "worklog", "session", "memory", "git"]
+}

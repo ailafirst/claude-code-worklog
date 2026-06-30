@@ -4,15 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 这个 repo 是什么
 
-本目录目前**只有一份规格说明书** `journal-skill-spec.md`，没有任何已实现的代码。它描述的是一个待构建的 MVP —— 名为 `journal` 的 Claude Code skill（一组 Python 脚本 + `SKILL.md` + 一个 slash command）。
+一个已实现、并打包成**标准 Claude Code 插件**的 worklog skill：名为 `journal` 的 skill（纯 Python 3 引擎 `journal.py` + `SKILL.md` + 内置 hook），外加一套端到端评测 `benchmark/`。原始规格见 `journal-skill-spec.md`。
 
-**关键：交付物不落在本 repo。** 按规格，产物要装到 Claude Code 的发现路径，而非这里：
+**分发方式 = plugin + marketplace（不再用复制脚本，install.py 已删）：**
 
-- skill → `~/.claude/skills/journal/`（`SKILL.md`、`journal.py`、`templates/entry.md`）
-- slash command → `~/.claude/commands/journal.md`
-- skill 运行时写入的数据 → `~/.claude/journal/YYYY/MM/YYYY-MM-DD.md`
+- 插件根 = `dist/`，清单 `dist/.claude-plugin/plugin.json`（插件名 `worklog`）。
+- skill → `dist/skills/journal/`（`SKILL.md`、`journal.py`、`templates/entry.md`、`test_journal.py`）。
+- 内置 Stop hook → `dist/hooks/hooks.json`（会话结束自动 `snapshot`）。
+- 仓库根 `.claude-plugin/marketplace.json` 把 `dist/` 登记为单插件 marketplace。
+- 用户装法：`/plugin marketplace add ailafirst/claude-code-worklog` → `/plugin install worklog@claude-code-worklog`；调用名 **`/worklog:journal`**。
+- skill 运行时写入的数据 → `~/.claude/journal/YYYY/MM/YYYY-MM-DD.md`（落点与插件位置无关，可用 `JOURNAL_ROOT` 覆盖）。
 
-动手前先确认本机 Claude Code 当前版本的实际 skill / command 发现路径（以实际为准）。本开发机是 Windows + PowerShell，`~` 即 `%USERPROFILE%`；规格按 `python3` 与 POSIX `~` 书写，落地时注意路径与解释器名差异。
+**插件内寻址用 `${CLAUDE_PLUGIN_ROOT}`**——Claude Code 在 skill 正文与 hook 命令里就地替换为插件安装绝对路径，别再写死 `~/.claude/skills/...`。本开发机是 Windows + PowerShell，解释器用 `py`（`python3`/`python` 是失效 stub）；hook 命令以 `py … || python3 …` 兜底跨平台。
 
 ## 核心立意（构建前必须内化）
 
@@ -67,6 +70,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 建议构建顺序
 
-frontmatter 读写 + 路径/目录逻辑（最底层，先用临时目录测通 round-trip）→ `append`（含校验）→ `collect`（git delta）→ `SKILL.md` + `templates/entry.md` + slash command（走通端到端 capture）→ `threads` 聚合 → `selftest` / 验收清单逐条过。每步独立可用，做完即可自己上手。
+frontmatter 读写 + 路径/目录逻辑（最底层，先用临时目录测通 round-trip）→ `append`（含校验）→ `collect`（git delta）→ `SKILL.md` + `templates/entry.md` + `hooks/hooks.json`（走通端到端 capture）→ `threads` 聚合 → `selftest` / 验收清单逐条过。每步独立可用，做完即可自己上手。
 
 完整细节、JSON 输出形状、SKILL.md 触发条件与 capture 工作流，均以 `journal-skill-spec.md` 为准。

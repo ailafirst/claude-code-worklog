@@ -1,0 +1,11 @@
+{
+  "name": "claude-code-worklog",
+  "owner": { "name": "ailafirst", "email": "1787424526@qq.com" },
+  "plugins": [
+    {
+      "name": "worklog",
+      "source": "./dist",
+      "description": "跨 session 工作日记 skill（capture / threads / rollup）"
+    }
+  ]
+}

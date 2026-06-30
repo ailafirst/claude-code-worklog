@@ -18,14 +18,17 @@
 
 ```
 .
-├── dist/                       # 可安装产物（install.py 会把它复制到 ~/.claude/）
+├── .claude-plugin/
+│   └── marketplace.json        # 单插件 marketplace（source: ./dist）
+├── dist/                       # 插件根（经 marketplace 分发，启用即被 Claude Code 发现）
+│   ├── .claude-plugin/
+│   │   └── plugin.json         # 插件清单（name: worklog）
 │   ├── skills/journal/
-│   │   ├── SKILL.md            # skill 触发条件 + capture 工作流
+│   │   ├── SKILL.md            # 触发条件 + 参数路由 + capture/threads/rollup 工作流
 │   │   ├── journal.py          # 确定性引擎（单入口 + 子命令）
 │   │   ├── templates/entry.md  # 条目模板
 │   │   └── test_journal.py     # 引擎单元测试
-│   └── commands/journal.md     # /journal slash command
-├── install.py                  # 安装脚本（复制 dist → ~/.claude，可选配 SessionEnd hook）
+│   └── hooks/hooks.json        # 内置 Stop hook → 会话结束自动 snapshot
 ├── test_e2e.py                 # 端到端集成测试（固定 git + 真实 LLM 跑通管道）
 ├── benchmark/                  # 评测套件：12 个真 git 夹具 + 端到端 LLM 评测（详见其 README）
 ├── journal-skill-spec.md       # 完整规格说明书
@@ -34,32 +37,41 @@
 
 ## 安装
 
-需要 Python 3.8+。在仓库根目录：
+本项目是一个标准 Claude Code 插件（单插件 marketplace）。需要 Python 3.8+（运行引擎脚本）。
+在 Claude Code 里：
 
 ```
-py install.py            # 复制 dist/ → ~/.claude/，验证 selftest，并提示 hook 配置
-py install.py --hook     # 同上，并自动写入 SessionEnd（Stop）hook 实现自动 snapshot
-py install.py --check    # 只验证已安装文件是否健康，不改任何东西
+/plugin marketplace add ailafirst/claude-code-worklog
+/plugin install worklog@claude-code-worklog
 ```
 
-安装后产物落在 Claude Code 的发现路径：
+启用后：
 
-- skill → `~/.claude/skills/journal/`
-- command → `~/.claude/commands/journal.md`
-- 日记数据 → `~/.claude/journal/YYYY/MM/YYYY-MM-DD.md`
+- skill 调用名 → `/worklog:journal`（`worklog` 是插件名，`journal` 是 skill 名）
+- 内置 Stop hook 自动 snapshot，无需手动配 `settings.json`
+- 日记数据 → `~/.claude/journal/YYYY/MM/YYYY-MM-DD.md`（落点与插件位置无关）
+
+本地开发 / 试用（不经 marketplace）：
+
+```
+claude --plugin-dir ./dist       # 直接加载本目录插件，/reload-plugins 热重载
+claude plugin validate ./dist    # 校验 plugin.json / SKILL.md / hooks.json
+```
 
 ## 用法
 
 ```
-/journal             记录本次 session（capture）
-/journal threads     查看 open / 停滞的 thread
-/journal rollup      生成本周蒸馏
-! py ~/.claude/skills/journal/journal.py note -m "随手记一句"
+/worklog:journal             记录本次 session（capture）
+/worklog:journal threads     查看 open / 停滞的 thread
+/worklog:journal rollup      生成本周蒸馏
 ```
 
-`journal.py` 子命令：`collect`（采 git 原料）、`append`（入库一个 session 块，带校验）、
+`/worklog:journal` 无参数即 capture；带 `threads` / `rollup` 切到对应模式。模型也会在你说
+"记一下这次 session""还有哪些 open thread"时自动触发。
+
+底层 `journal.py` 子命令：`collect`（采 git 原料）、`append`（入库一个 session 块，带校验）、
 `note` / `snapshot` / `threads` / `rollup` / `path` / `selftest`。
-根目录默认 `~/.claude/journal/`，可用环境变量 `JOURNAL_ROOT` 覆盖（测试用临时目录靠它）。
+日记根目录默认 `~/.claude/journal/`，可用环境变量 `JOURNAL_ROOT` 覆盖（测试用临时目录靠它）。
 
 ## 测试与评测
 
