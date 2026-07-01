@@ -7,6 +7,9 @@ env.txt
 benchmark/.work/
 .work/
 
+# ── 真实日记数据（JOURNAL_ROOT 指到这里，内容是私人工作记录，绝不入库）──
+journal-data/
+
 # ── Python 缓存 ────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
