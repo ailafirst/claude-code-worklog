@@ -44,7 +44,19 @@ benchmark/
 py build_case.py --all                 # 构建全部 + 核对每个 case 的 expect（确定性层自检）
 py build_case.py 02-dead-ends --collect # 构建单个，打印它的 collect JSON
 py build_case.py 09-continuation        # 只落夹具到 .work/，不跑 collect
+py stress_multiday.py                  # 跨月/跨年边界压力测试：threads 聚合 + rollup 周边界（确定性层，见下）
 ```
+
+### 跨月/跨年压力测试（stress_multiday.py）
+
+12 个 case 只验证"单次 session 写得对不对"，不验证"攒了一两个月日记后，`threads`/
+`rollup` 的日期算术还对不对"。`stress_multiday.py` 补这一块：复用 12 个 case 的金标准
+条目正文 + 真实重放出的 commit head sha，循环铺满一段连续 45 天（2025-11-20 ~
+2026-01-03，横跨 11/12 月末、且盖住 ISO 2026 年 W1 这条横跨上一年 12 月的边界），断言
+`threads` 的 count/first/last/STALE 与独立算出的期望值一致，`rollup --week/--year` 只
+收录该 ISO 周范围内的日文件（周边界用 `date.fromisocalendar` 独立计算，不复用
+`journal.py` 自己的实现，避免自证）。只测确定性层，judgment 层质量仍由上面的
+12 个 case + `run_bench.py` 覆盖。
 
 `--all` 通过 = 确定性层在 12 个真实夹具上行为正确（commit 数、分支、uncommitted、
 session_notes 合并、`--since` 续接都符合声明）。判断层另需人工/裁判按
