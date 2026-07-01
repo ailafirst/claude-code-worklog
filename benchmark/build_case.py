@@ -100,7 +100,7 @@ def _write_prior_journal(jroot, case, sha):
         f"## 09:00 · session\n\n"
         f"---\ndate: {today:%Y-%m-%d}\nproject: {case.get('project','')}\n"
         f"threads: {threads}\nhead: {sha}\n---\n\n"
-        f"**做成了什么**\n- 上一次 session（基准夹具预置），head 落在此提交\n"
+        f"### 做成了什么\n- 上一次 session（基准夹具预置），head 落在此提交\n"
     )
     with open(day_file, "w", encoding="utf-8", newline="\n") as f:
         f.write(block)

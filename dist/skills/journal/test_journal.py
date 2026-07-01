@@ -119,11 +119,11 @@ def sample_block(date_str, project, threads, time="10:00",
         f"project: {project}\n"
         f"threads: {threads_json}{head_line}\n"
         f"---\n\n"
-        f"**做成了什么**\n- 测试条目 {time}\n\n"
-        f"**关键决策 / 为什么**\n- {body_extra or '无'}\n\n"
-        f"**卡点 / 困惑**\n- 无\n\n"
-        f"**下次 TODO**\n- 下一步\n\n"
-        f"**碰到的 open thread**\n- 无\n"
+        f"### 做成了什么\n- 测试条目 {time}\n\n"
+        f"### 关键决策 / 为什么\n- {body_extra or '无'}\n\n"
+        f"### 卡点 / 困惑\n- 无\n\n"
+        f"### 下次 TODO\n- 下一步\n\n"
+        f"### 碰到的 open thread\n- 无\n"
     )
 
 
@@ -398,8 +398,8 @@ if not _filter or run_active():
         # §10.3: 文件头、frontmatter 合法、五槽位
         check(text.startswith("# 2026-06-29"), "文件头 # YYYY-MM-DD 正确")
         check(text.count("# 2026-06-29") == 1, "文件头只写一次")
-        for slot in ("**做成了什么**", "**关键决策 / 为什么**", "**卡点 / 困惑**",
-                     "**下次 TODO**", "**碰到的 open thread**"):
+        for slot in ("### 做成了什么", "### 关键决策 / 为什么", "### 卡点 / 困惑",
+                     "### 下次 TODO", "### 碰到的 open thread"):
             check(text.count(slot) == 2, f"五槽位 '{slot}' 在两块都出现")
 
         # §10.4: 连续两次 append 后，parser 拆成 2 个独立块

@@ -11,20 +11,20 @@ head: <由 append 回填>
 next: ["规范化 cache key 的 query 参数顺序，复测命中率（当前 ~40% 疑因顺序敏感）", "/health 等探活端点 bypass 缓存"]
 ---
 
-**做成了什么**
+### 做成了什么
 - GET 端点加响应缓存层 + 单测（a1.. / b2..，src/cache.ts、gateway.ts）
 
-**关键决策 / 为什么**
+### 关键决策 / 为什么
 - 缓存按 path+query 做 key；当前实现 query 原样拼接，顺序敏感（见卡点）。
 
-**卡点 / 困惑**
+### 卡点 / 困惑
 - 命中率仅 ~40%，疑因 cacheKey 把 query 原样拼接、参数顺序不固定 → 同义请求被当不同 key。待验证。
 
-**下次 TODO**
+### 下次 TODO
 - 规范化 cache key 的 query 顺序后复测命中率
 - /health 等探活端点 bypass 缓存（当前被误缓存）
 
-**碰到的 open thread**
+### 碰到的 open thread
 - cache-layer：基础缓存已上线，命中率优化与探活 bypass 未完
 ```
 

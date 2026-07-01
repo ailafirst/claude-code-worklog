@@ -11,22 +11,22 @@ head: <由 append 回填>
 next: ["实现 pipeline.register(stage, after=...) 插件注册 hook"]
 ---
 
-**做成了什么**
+### 做成了什么
 - Renderer→RenderPipeline，单体 run() 拆成有序 stage 列表（a1b2c3d，src/render/*）
   行为零变化，纯结构。
 
-**关键决策 / 为什么**
+### 关键决策 / 为什么
 - 这次改名是**插件架构的使能改动**，本身不带插件功能。目标：让第三方能在 raster 与 shade
   之间插自定义 stage。旧单体 run() 把两步写死、没有插入缝；改成 stages 列表后，注册插件
   = 往列表插一项。
 
-**卡点 / 困惑**
+### 卡点 / 困惑
 - 无
 
-**下次 TODO**
+### 下次 TODO
 - 实现 register(stage, after=...) 插件注册 hook（本次只拆墙未开洞）
 
-**碰到的 open thread**
+### 碰到的 open thread
 - plugin-arch：管线已就位，待加注册 API
 ```
 

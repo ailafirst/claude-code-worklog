@@ -11,22 +11,22 @@ head: <由 append 回填>
 next: ["可选：给 cursor 加签名防篡改（内部接口暂不急）"]
 ---
 
-**做成了什么**
+### 做成了什么
 - /orders 上线 cursor 分页（a1b2c3d，src/api/orders.py + pagination.py）
 
-**关键决策 / 为什么**
+### 关键决策 / 为什么
 - 选 cursor 而非 offset：orders 追加密集，offset 在翻页中途插入新单会整体下移，
   造成重复/漏单；cursor 锚在数据本身，插入不影响已翻过的窗口。
 - cursor 编码 (created_at, id) 而非只 created_at：同毫秒多单时必须用 id 做 tie-break，
   否则边界错漏。
 
-**卡点 / 困惑**
+### 卡点 / 困惑
 - 无
 
-**下次 TODO**
+### 下次 TODO
 - 可选：cursor 加签名防篡改（当前内部接口不急）
 
-**碰到的 open thread**
+### 碰到的 open thread
 - 无
 ```
 

@@ -681,7 +681,7 @@ def _sample_block(d, project, threads, hhmm):
         f"## {hhmm} · session\n\n"
         f"---\ndate: {d}\nproject: {project}\n"
         f"threads: {json.dumps(threads, ensure_ascii=False)}\n---\n\n"
-        f"**做成了什么**\n- demo {hhmm}\n"
+        f"### 做成了什么\n- demo {hhmm}\n"
     )
 
 

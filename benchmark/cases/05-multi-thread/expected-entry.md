@@ -10,23 +10,23 @@ threads: ["search-bug", "deps-upgrade", "onboarding-docs"]
 head: <由 append 回填>
 ---
 
-**做成了什么**
+### 做成了什么
 - search-bug：修了换筛选后结果不刷新（memo key 漏了 filter），含快照测试更新
   （a1.. / d4..，src/search/index.ts、__tests__）
 - deps-upgrade：lodash 4.17.20→4.17.21（CVE-2021-23337，b2..）
 - onboarding-docs：补新人上手文档（c3..）
 
-**关键决策 / 为什么**
+### 关键决策 / 为什么
 - search 的记忆化 key 只含 query 不含 filter，导致换 filter 命中旧缓存——key 改为 [q, filter]。
   （deps 升级与文档无判断含量，不展开。）
 
-**卡点 / 困惑**
+### 卡点 / 困惑
 - 无
 
-**下次 TODO**
+### 下次 TODO
 - 无
 
-**碰到的 open thread**
+### 碰到的 open thread
 - 三条线本日均告一段落；search-bug 可留意是否还有别处用了同样的弱 memo key
 ```
 

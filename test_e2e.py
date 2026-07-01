@@ -138,19 +138,19 @@ head: <COMMIT_SHA_会在请求里给你，原样复制>
 next: ["<下次第一步，越具体越好>"]
 ---
 
-**做成了什么**
+### 做成了什么
 - <一句话成果 + commit hash（如 abc1234），引 hash 不贴 diff；无提交写"无">
 
-**关键决策 / 为什么**
+### 关键决策 / 为什么
 - <为什么这么改、放弃了哪条路——git 拿不到的就记这里>
 
-**卡点 / 困惑**
+### 卡点 / 困惑
 - <卡在哪、还没想明白什么；没有写"无">
 
-**下次 TODO**
+### 下次 TODO
 - <下次第一步，具体可执行>
 
-**碰到的 open thread**
+### 碰到的 open thread
 - <thread 名：当前状态 / 还差什么；没有写"无">
 
 约束：
@@ -158,6 +158,7 @@ next: ["<下次第一步，越具体越好>"]
 2. head 字段原样复制请求中提供的值，不要修改
 3. commit 只引 7 位 hash + 文件名，绝不贴 diff 或完整 commit message
 4. 只输出上面格式的 markdown 块，不要前言、不要结尾说明
+5. 五个槽位标题严格用上面的 `### ` 三级标题，不要改成 `**加粗**`；正文别堆加粗/emoji
 """.strip()
 
 
@@ -401,8 +402,8 @@ def run_e2e():
                   "正文不含 diff 标记（LLM 没有贴 diff）")
 
             # 五槽位
-            for slot in ("**做成了什么**", "**关键决策 / 为什么**",
-                         "**卡点 / 困惑**", "**下次 TODO**", "**碰到的 open thread**"):
+            for slot in ("### 做成了什么", "### 关键决策 / 为什么",
+                         "### 卡点 / 困惑", "### 下次 TODO", "### 碰到的 open thread"):
                 check(slot in day1_text, f"槽位 '{slot}' 存在")
 
         # ════════════════════════════════════════════════════════════════
@@ -518,11 +519,11 @@ def run_e2e():
             f"## 16:00 · session\n\n"
             f"---\ndate: {today_str}\nproject: journal-skill\n"
             f"threads: forgot-list-syntax\n---\n\n"
-            f"**做成了什么**\n- 无\n\n"
-            f"**关键决策 / 为什么**\n- 无\n\n"
-            f"**卡点 / 困惑**\n- 无\n\n"
-            f"**下次 TODO**\n- 无\n\n"
-            f"**碰到的 open thread**\n- 无\n"
+            f"### 做成了什么\n- 无\n\n"
+            f"### 关键决策 / 为什么\n- 无\n\n"
+            f"### 卡点 / 困惑\n- 无\n\n"
+            f"### 下次 TODO\n- 无\n\n"
+            f"### 碰到的 open thread\n- 无\n"
         )
         rc, _, err = cli("append", stdin_text=bad_entry, env_extra=ENV)
         check(rc != 0, "非法 frontmatter 被拒（非零退出）")
