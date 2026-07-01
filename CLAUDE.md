@@ -33,11 +33,11 @@ py dist/skills/journal/journal.py selftest
 # 端到端集成测试（固定 git 数据 + 真实 LLM，需要 env.txt 或环境变量凭据）
 py test_e2e.py
 
-# benchmark：12 个真 git 夹具的确定性层自检（不调 LLM）
+# benchmark：13 个真 git 夹具的确定性层自检（不调 LLM）
 py benchmark/build_case.py --all
 py benchmark/build_case.py 02-dead-ends --collect   # 单个 case，打印其 collect JSON
 
-# benchmark：跨月/跨年边界压力测试（threads 聚合 + rollup 周边界，纯确定性层，复用 12 个 case 的真实条目正文）
+# benchmark：跨月/跨年边界压力测试（threads 聚合 + rollup 周边界，纯确定性层，复用 13 个 case 的真实条目正文）
 py benchmark/stress_multiday.py
 
 # benchmark：端到端 LLM 评测（机器校验层 + LLM 裁判层）

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """跨月 / 跨年边界压力测试 —— 只测确定性层，不测模型写得好不好。
 
-judgment 层的质量由 run_bench.py 的 12 个 case 覆盖；这里测的是 journal.py 自己的
+judgment 层的质量由 run_bench.py 的 13 个 case 覆盖；这里测的是 journal.py 自己的
 日期算术在"攒了一两个月日记"之后还对不对，具体是两件事：
 
   1. threads 聚合：逐 thread 的出现次数 / 首次 / 最近日期，与独立算出的期望值一致，
@@ -10,12 +10,12 @@ judgment 层的质量由 run_bench.py 的 12 个 case 覆盖；这里测的是 j
      ISO 第 1 周横跨上一年 12 月的边界（如 2026 年 W1 = 2025-12-29 ~ 2026-01-04，
      用 date.fromisocalendar 独立算出，不复用 journal.py 自己的周边界实现）。
 
-数据不是现造的占位正文：复用 benchmark/cases/ 12 个 case 的金标准条目正文
+数据不是现造的占位正文：复用 benchmark/cases/ 全部 case 的金标准条目正文
 （expected-entry.md）+ 真实重放出的 commit head sha（materialize 出的 git 仓），
 循环铺满一段连续跨度，只有"日期"是为了制造跨度人为指定的——避免用"测试条目 09:00"
 这种空壳内容掩盖真实场景该有的复杂度（多线程共存、正文含真实决策措辞等）。
 
-hermetic：JOURNAL_ROOT 指临时目录；会顺带用 build_case 物化 12 个 case 的 git 仓到
+hermetic：JOURNAL_ROOT 指临时目录；会顺带用 build_case 物化全部 case 的 git 仓到
 benchmark/.work/（可重建，已 gitignore），不碰真实 ~/.claude/journal。
 
 用法：
@@ -65,7 +65,7 @@ def check(ok, label, detail=""):
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# 语料来源：12 个 case 的金标准条目正文 + 真实重放出的 head sha
+# 语料来源：全部 case 的金标准条目正文 + 真实重放出的 head sha
 # ════════════════════════════════════════════════════════════════════════════
 
 def load_real_entries():
@@ -95,7 +95,7 @@ def load_real_entries():
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# 语料铺设：循环 12 个 case，连续 num_days 天一天一条
+# 语料铺设：循环全部 case，连续 num_days 天一天一条
 # ════════════════════════════════════════════════════════════════════════════
 
 def build_corpus(entries, start, num_days):
@@ -142,8 +142,9 @@ def main():
         os.environ["JOURNAL_ROOT"] = tmp
 
         entries = load_real_entries()
-        check(len(entries) == 12, "12 个 case 的金标准条目全部提取成功",
-              f"实得 {len(entries)} 条")
+        expected_case_count = len(bc.list_case_ids())
+        check(len(entries) == expected_case_count, "全部 case 的金标准条目均提取成功",
+              f"实得 {len(entries)} 条，期望 {expected_case_count}")
 
         # 跨度：2025-11-20 ~ 2026-01-03（45 天），横跨 11/12 月末、12/1 月末，
         # 且盖住 ISO 2026 年 W1（2025-12-29~2026-01-04）这条横跨上一年 12 月的边界。
@@ -154,7 +155,7 @@ def main():
         j.do_append(
             f"## 08:00 · session\n\n"
             f"{j.dump_frontmatter({'date': date.today().strftime('%Y-%m-%d'), 'project': 'proj', 'threads': ['fresh-check'], 'head': 'f'*40})}\n\n"
-            f"**做成了什么**\n- 今天的占位条目，只为测新鲜度\n",
+            f"### 做成了什么\n- 今天的占位条目，只为测新鲜度\n",
             cli_date=date.today().strftime("%Y-%m-%d"),
         )
 
@@ -169,7 +170,7 @@ def main():
         check(len(day_files) == num_days + 1, "日文件总数 = 45 天语料 + 1 条今天",
               f"实得 {len(day_files)}")
 
-        # ── 1. threads 聚合：45+1 条、12 种 thread 规模下，统计仍然精确 ──────────
+        # ── 1. threads 聚合：45+1 条、多种 thread 规模下，统计仍然精确 ──────────
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             j.cmd_threads(SimpleNamespace(stale_days=7))

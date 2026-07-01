@@ -49,16 +49,16 @@ py stress_multiday.py                  # 跨月/跨年边界压力测试：threa
 
 ### 跨月/跨年压力测试（stress_multiday.py）
 
-12 个 case 只验证"单次 session 写得对不对"，不验证"攒了一两个月日记后，`threads`/
-`rollup` 的日期算术还对不对"。`stress_multiday.py` 补这一块：复用 12 个 case 的金标准
+13 个 case 只验证"单次 session 写得对不对"，不验证"攒了一两个月日记后，`threads`/
+`rollup` 的日期算术还对不对"。`stress_multiday.py` 补这一块：复用 13 个 case 的金标准
 条目正文 + 真实重放出的 commit head sha，循环铺满一段连续 45 天（2025-11-20 ~
 2026-01-03，横跨 11/12 月末、且盖住 ISO 2026 年 W1 这条横跨上一年 12 月的边界），断言
 `threads` 的 count/first/last/STALE 与独立算出的期望值一致，`rollup --week/--year` 只
 收录该 ISO 周范围内的日文件（周边界用 `date.fromisocalendar` 独立计算，不复用
 `journal.py` 自己的实现，避免自证）。只测确定性层，judgment 层质量仍由上面的
-12 个 case + `run_bench.py` 覆盖。
+13 个 case + `run_bench.py` 覆盖。
 
-`--all` 通过 = 确定性层在 12 个真实夹具上行为正确（commit 数、分支、uncommitted、
+`--all` 通过 = 确定性层在 13 个真实夹具上行为正确（commit 数、分支、uncommitted、
 session_notes 合并、`--since` 续接都符合声明）。判断层另需人工/裁判按
 `expected-entry.md` 评分。
 
@@ -106,7 +106,7 @@ py run_bench.py --all --model <id> --no-judge  # 只跑机器层（省 token）
 > 预算不足时 `content` 会空。`run_bench.py` 默认 `--max-tokens 6000` 并在 content 空时回退读
 > `reasoning_content`、报出 `finish_reason`。
 
-## 12 个 case 与覆盖矩阵
+## 13 个 case 与覆盖矩阵
 
 | id | 场景 | git 形态 | 主要考点 | trap（易犯错） |
 |----|------|---------|---------|---------------|
@@ -122,9 +122,10 @@ py run_bench.py --all --model <id> --no-judge  # 只跑机器层（省 token）
 | 10-low-signal      | 改版本号/错别字 | 富但琐碎 | **克制**，空槽写"无" | 把琐事吹成"洞见" |
 | 11-decision-heavy  | 选状态管理 | spike+revert | 决策 + **被否的备选及理由** | 只记赢家，丢掉理由 |
 | 12-notes-merge     | 中途随手记 | 富 + session_notes | 合并 `note` 进 next/open-thread | 无视 notes |
+| 13-phantom-edit    | 修 bug + 讨论过未落地的笔记改动 | 1 提交 + gitignored 文件 | **无 git 证据的改动必须核实** | 把"讨论过"写成"已经改了" |
 
-矩阵维度：git 富/贫/无/仅未提交/续接/琐碎，正交覆盖
-死路·卡点·决策·续接·随手记·克制·多线程。
+矩阵维度：git 富/贫/无/仅未提交/续接/琐碎/gitignored 无证据，正交覆盖
+死路·卡点·决策·续接·随手记·克制·多线程·无凭据编造。
 
 ## 加新 case
 

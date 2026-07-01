@@ -30,7 +30,7 @@
 │   │   └── test_journal.py     # 引擎单元测试
 │   └── hooks/hooks.json        # 内置 Stop hook → 会话结束自动 snapshot
 ├── test_e2e.py                 # 端到端集成测试（固定 git + 真实 LLM 跑通管道）
-├── benchmark/                  # 评测套件：12 个真 git 夹具 + 端到端 LLM 评测（详见其 README）
+├── benchmark/                  # 评测套件：13 个真 git 夹具 + 端到端 LLM 评测（详见其 README）
 ├── journal-skill-spec.md       # 完整规格说明书
 └── CLAUDE.md                   # 给 Claude Code 的项目指引
 ```
@@ -77,13 +77,13 @@ claude plugin validate ./dist    # 校验 plugin.json / SKILL.md / hooks.json
 
 ```
 py dist/skills/journal/test_journal.py   # 引擎单元测试（确定性层，零依赖）
-py benchmark/build_case.py --all         # 12 个真 git 夹具的确定性层自检
+py benchmark/build_case.py --all         # 13 个真 git 夹具的确定性层自检
 py benchmark/run_bench.py --all --model <id>   # 端到端 LLM 评测（机器层 + 裁判层）
 ```
 
 端到端评测需要 LLM 端点凭据：环境变量 `BENCH_BASE_URL` / `BENCH_API_KEY`，或在仓库根写 `env.txt`
 （第一行 base_url、第二行 api_key）。**`env.txt` 已被 `.gitignore` 排除，绝不入库。**
-评测设计与 12 个 case 的覆盖矩阵见 [`benchmark/README.md`](benchmark/README.md)。
+评测设计与 13 个 case 的覆盖矩阵见 [`benchmark/README.md`](benchmark/README.md)。
 
 ## 许可
 

@@ -295,7 +295,7 @@ def judge_user(case, expected_md, entry):
     )
 
 
-# ── few-shot：用合成（非 12 个真 case，杜绝泄题）样例锚定标度 ──────────────────
+# ── few-shot：用合成（非真 case，杜绝泄题）样例锚定标度 ──────────────────────
 # A：只复述 commit、threads 空、零推理 → 命门触发、扣到 0、fail。
 # B：信号很高但 thread 标签含糊 → 仍扣 1 分得 9，示范『满分稀缺、必itemize 扣分』。
 _FEWSHOT_A_USER = judge_user(
