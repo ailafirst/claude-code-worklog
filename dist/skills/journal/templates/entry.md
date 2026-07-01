@@ -3,7 +3,7 @@
 ---
 date: YYYY-MM-DD
 project: <repo 或跨项目主线名>
-threads: ["<进行中的线程标签>"]
+threads: ["<这次涉及的具名主题标签，收没收尾都打>"]
 blockers: ["<卡点标签，可省略整行>"]
 head: <脚本回填，可留空>
 next: ["<下次接着干的第一步>"]
